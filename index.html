@@ -235,7 +235,7 @@
     fetch(FB_URL + 'records.json')
     .then(r=>r.json())
     .then(d=>{
-      var rec=d||[];
+      var rec=(d||[]).slice(-96);
       document.getElementById('bi-rec').textContent=rec.length;
       var h='';
       for(var i=rec.length-1; i>=0; i--){
