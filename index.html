@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang='pt-BR'>
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1.0'>
+  <title>Estacao Climatica (Cloud)</title>
+  <style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#0d0d0d;color:#e0e0e0;font-family:system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:32px 16px}
+  h1{font-size:1.5rem;color:#7ec8e3;margin:20px 0;letter-spacing:2px;text-transform:uppercase;font-weight:300;text-align:center}
+  .tabs{display:flex;gap:4px;margin-bottom:24px;flex-wrap:wrap;justify-content:center}
+  .tab{background:#1a1a2e;border:1px solid #2a2a4a;color:#888;padding:10px 20px;border-radius:8px 8px 0 0;cursor:pointer;font-size:.85rem;text-decoration:none;transition:.2s}
+  .tab.act{background:#16213e;color:#7ec8e3;border-color:#7ec8e3;border-bottom-color:transparent}
+  .sec{display:none;width:100%;max-width:700px}.sec.act{display:block}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
+  .card{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:14px;padding:32px 20px;text-align:center;min-height:170px;display:flex;flex-direction:column;justify-content:center;transition:transform .2s}
+  .card:hover{transform:translateY(-3px);border-color:#7ec8e3}
+  .card .lbl{font-size:.7rem;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px}
+  .card .val{font-size:2.5rem;font-weight:700;color:#fff;line-height:1}
+  .card .unt{font-size:.85rem;color:#7ec8e3;margin-left:3px}
+  .card .sub{font-size:.75rem;color:#666;margin-top:10px}
+  .foot{margin-top:32px;font-size:.75rem;color:#555;display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+  .cfg{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:12px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .cfg-n{font-size:.95rem;font-weight:600;color:#fff}.cfg-d{font-size:.7rem;color:#666;margin-top:2px}
+  .tog{position:relative;width:44px;height:24px;flex-shrink:0}
+  .tog input{opacity:0;width:0;height:0;position:absolute}
+  .sli{position:absolute;cursor:pointer;inset:0;background:#333;border-radius:24px;transition:.3s}
+  .sli:before{position:absolute;content:'';height:18px;width:18px;left:3px;bottom:3px;background:#888;border-radius:50%;transition:.3s}
+  .tog input:checked~.sli{background:#1a3a5c;border:1px solid #7ec8e3}
+  .tog input:checked~.sli:before{transform:translateX(20px);background:#7ec8e3}
+  .ir{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:12px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-top:16px;margin-bottom:16px}
+  .ir-l{color:#888;font-size:.85rem}.ir-v{color:#7ec8e3;font-size:.9rem;font-weight:600;min-width:36px;text-align:right}
+  input[type=range]{-webkit-appearance:none;width:150px;height:4px;background:#333;border-radius:4px;outline:none;cursor:pointer}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#7ec8e3;cursor:pointer}
+  .btn{background:#1a3a5c;color:#7ec8e3;border:1px solid #7ec8e3;padding:12px 32px;border-radius:8px;font-size:.9rem;cursor:pointer;width:100%;max-width:280px;transition:.2s}
+  .btn:hover{background:#2a5a8c}.btn:disabled{opacity:.5;cursor:not-allowed}
+  .msg{font-size:.8rem;color:#4a4;margin-top:10px;min-height:20px}
+  .tbl-wrap{max-height:300px;overflow-y:auto;overflow-x:auto;border-radius:8px;border:1px solid #2a2a4a}
+  .tbl{width:100%;border-collapse:collapse;font-size:.8rem}
+  .tbl th{position:sticky;top:0;background:#0d0d0d;z-index:1;text-align:left;color:#7ec8e3;font-weight:600;padding:8px 10px;border-bottom:1px solid #2a2a4a;text-transform:uppercase;letter-spacing:1px;font-size:.7rem}
+  .tbl td{padding:7px 10px;border-bottom:1px solid #1a1a2e;color:#ccc}
+  .tbl tr:hover td{background:#16213e}
+  .del{background:none;border:none;color:#f44;cursor:pointer;font-size:1rem;padding:2px 6px;border-radius:4px;transition:.2s}
+  .del:hover{background:#3a1a1a;color:#f88}
+  .bar{width:100%;height:20px;background:#1a1a2e;border-radius:10px;overflow:hidden;border:1px solid #2a2a4a;margin:12px 0}
+  .bar-f{height:100%;background:linear-gradient(90deg,#1a3a5c,#7ec8e3);border-radius:10px;transition:width .5s}
+  .bar-label{display:flex;justify-content:space-between;font-size:.7rem;color:#888;margin-bottom:4px}
+  .info-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+  .info-cell{font-size:.75rem;color:#888}.info-cell b{color:#7ec8e3}
+  @media(max-width:480px){.grid{grid-template-columns:1fr 1fr}.card{padding:20px;min-height:120px}.card .val{font-size:1.6rem}}
+  </style>
+</head>
+<body>
+
+  <h1>Estacao Climatica<br><small style="font-size:0.6rem;color:#888">Cloud Dashboard - Firebase</small></h1>
+  
+  <div class='tabs'>
+    <a class='tab act' onclick="showTab('d',this)">Dashboard</a>
+    <a class='tab' onclick="showTab('m',this)">Historico</a>
+    <a class='tab' onclick="showTab('c',this)">Telas</a>
+  </div>
+
+  <!-- Dashboard -->
+  <div id='d' class='sec act'>
+    <div class='grid'>
+      <div class='card'><div class='lbl'>Temperatura</div><div class='val' id='t'>--</div><div class='sub'>BME280</div></div>
+      <div class='card'><div class='lbl'>Umidade</div><div class='val' id='h'>--</div><div class='sub'>BME280</div></div>
+      <div class='card'><div class='lbl'>Pressao</div><div class='val' id='p'>--</div><div class='sub'>BME280</div></div>
+      <div class='card'><div class='lbl'>Clima</div><div class='val' style='font-size:1.2rem' id='w'>--</div><div class='sub' id='wt'>--</div></div>
+    </div>
+    <div class='foot'>
+      <span id='ip'>--</span><span id='rs'>--</span><span id='up'>--</span><span id='rf'></span>
+    </div>
+  </div>
+
+  <!-- Memoria/Histórico -->
+  <div id='m' class='sec'>
+    <div class='tbl-wrap'>
+      <table class='tbl'>
+        <thead>
+          <tr><th>#</th><th>Data/Hora</th><th>Temp Local</th><th>Temp BME</th><th>Umidade</th><th>Pressao</th></tr>
+        </thead>
+        <tbody id='rb'>
+          <tr><td colspan='6' style='text-align:center;color:#666'>Carregando nuvem...</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class='card' style='margin-top:20px; min-height:80px; padding: 20px;'>
+      <div class='info-row' style='justify-content:center'>
+        <span class='info-cell'>Registros na Nuvem: <b id='bi-rec'>0</b></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Config -->
+  <div id='c' class='sec'>
+    <div class='cfg'><div><div class='cfg-n'>Hora e Data</div><div class='cfg-d'>Relogio NTP</div></div><label class='tog'><input type='checkbox' id='c0'><span class='sli'></span></label></div>
+    <div class='cfg'><div><div class='cfg-n'>Clima</div><div class='cfg-d'>Cidade e temperatura</div></div><label class='tog'><input type='checkbox' id='c1'><span class='sli'></span></label></div>
+    <div class='cfg'><div><div class='cfg-n'>BME280</div><div class='cfg-d'>Temp, umid, pressao</div></div><label class='tog'><input type='checkbox' id='c2'><span class='sli'></span></label></div>
+    <div class='cfg'><div><div class='cfg-n'>Rede</div><div class='cfg-d'>IP e RSSI</div></div><label class='tog'><input type='checkbox' id='c3'><span class='sli'></span></label></div>
+    <div class='cfg'><div><div class='cfg-n'>Grafico BME</div><div class='cfg-d'>Historico Temp</div></div><label class='tog'><input type='checkbox' id='c4'><span class='sli'></span></label></div>
+    <div class='cfg'><div><div class='cfg-n'>Previsao</div><div class='cfg-d'>Tempo em 3 dias</div></div><label class='tog'><input type='checkbox' id='c5'><span class='sli'></span></label></div>
+    
+    <div class='ir'><span class='ir-l'>Troca tela</span><input type='range' id='sl' min='0' max='7' value='2' oninput='sv(this.value)'><span class='ir-v' id='slv'>3s</span></div>
+    
+    <div class='cfg' style='flex-direction:column;align-items:flex-start;gap:10px'><div style='width:100%;display:flex;justify-content:space-between'><div><div class='cfg-n'>Brilho do OLED</div><div class='cfg-d'>Luminosidade (1-255)</div></div><span id='brv' style='color:#7ec8e3;font-size:.9rem;font-weight:600'>100</span></div><input type='range' id='br' min='1' max='255' value='100' oninput='document.getElementById("brv").textContent=this.value' style='width:100%'></div>
+    
+    <div class='cfg' style='flex-direction:column;align-items:flex-start;gap:10px'>
+      <div style='width:100%;display:flex;justify-content:space-between'>
+        <div><div class='cfg-n'>Descanso de Tela</div><div class='cfg-d'>Evita Burn-in do OLED</div></div>
+        <select id='nm' onchange='tc()' style='background:#333;color:#fff;border:none;border-radius:4px;padding:4px'>
+          <option value='0'>Desativado</option>
+          <option value='1'>Automatico</option>
+          <option value='2'>Sempre Ativo</option>
+        </select>
+      </div>
+      <div id='nt' style='width:100%;display:flex;gap:10px;display:none'>
+        <div style='flex:1'><div class='cfg-d'>Inicio (h)</div><input type='number' id='ns' min='0' max='23' style='width:100%;background:#333;color:#fff;border:none;padding:5px;border-radius:4px'></div>
+        <div style='flex:1'><div class='cfg-d'>Fim (h)</div><input type='number' id='ne' min='0' max='23' style='width:100%;background:#333;color:#fff;border:none;padding:5px;border-radius:4px'></div>
+      </div>
+    </div>
+    
+    <div style='text-align:center'><button class='btn' id='bs' onclick='sc()'>Salvar na Nuvem</button><div class='msg' id='sm'></div></div>
+  </div>
+
+  <script>
+  const FB_URL = "https://oledclima-default-rtdb.firebaseio.com/";
+  var lb=['1s','2s','3s','5s','8s','10s','15s','30s'];
+  
+  function tc(){
+    var nm=document.getElementById('nm').value;
+    document.getElementById('nt').style.display=nm=='1'?'flex':'none';
+    document.getElementById('br').disabled=nm=='2';
+  }
+  function sv(v){document.getElementById('slv').textContent=lb[v]}
+
+  function showTab(t,e){
+    document.querySelectorAll('.sec').forEach(s=>s.classList.remove('act'));
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('act'));
+    document.getElementById(t).classList.add('act');
+    e.classList.add('act');
+    if(t==='c') gc();
+    if(t==='m') gm();
+  }
+
+  // Fetch Live Data
+  function fd(){
+    fetch(FB_URL + 'live.json')
+    .then(r=>r.json())
+    .then(d=>{
+      if(!d) return;
+      var ok=d.bmeOk==1;
+      document.getElementById('t').innerHTML=d.bmeTemp+'<span class="unt">C</span>'+(ok?'':' <small style="color:#f80">cache</small>');
+      document.getElementById('h').innerHTML=d.bmeHum+'<span class="unt">%</span>'+(ok?'':' <small style="color:#f80">cache</small>');
+      document.getElementById('p').innerHTML=d.bmePres+'<span class="unt">hPa</span>'+(ok?'':' <small style="color:#f80">cache</small>');
+      document.getElementById('w').textContent=d.city;
+      document.getElementById('wt').innerHTML=d.temperature+' C';
+      document.getElementById('ip').textContent='IP:'+d.ip;
+      document.getElementById('rs').textContent='RSSI:'+d.rssi;
+      
+      var s=d.uptime||0, h=Math.floor(s/3600), m=Math.floor((s%3600)/60); s%=60;
+      document.getElementById('up').textContent='Up:'+h+'h'+m+'m'+s+'s';
+      document.getElementById('rf').textContent='';
+    })
+    .catch(()=>{document.getElementById('rf').textContent='Desconectado da Nuvem'});
+  }
+
+  // Get Config
+  function gc(){
+    fetch(FB_URL + 'cfg.json')
+    .then(r=>r.json())
+    .then(d=>{
+      if(!d) return;
+      document.getElementById('c0').checked=d.s0==1;
+      document.getElementById('c1').checked=d.s1==1;
+      document.getElementById('c2').checked=d.s2==1;
+      document.getElementById('c3').checked=d.s3==1;
+      document.getElementById('c4').checked=d.s4==1;
+      document.getElementById('c5').checked=d.s5==1;
+      if(d.intIdx!==undefined) {
+        document.getElementById('sl').value=d.intIdx;
+        document.getElementById('slv').textContent=lb[d.intIdx];
+      }
+      if(d.nm!==undefined) document.getElementById('nm').value=d.nm;
+      if(d.ns!==undefined) document.getElementById('ns').value=d.ns;
+      if(d.ne!==undefined) document.getElementById('ne').value=d.ne;
+      if(d.br!==undefined) {
+        document.getElementById('br').value=d.br;
+        document.getElementById('brv').textContent=d.br;
+      }
+      tc();
+    });
+  }
+
+  // Save Config
+  function sc(){
+    var cfg = {
+      s0: document.getElementById('c0').checked?1:0,
+      s1: document.getElementById('c1').checked?1:0,
+      s2: document.getElementById('c2').checked?1:0,
+      s3: document.getElementById('c3').checked?1:0,
+      s4: document.getElementById('c4').checked?1:0,
+      s5: document.getElementById('c5').checked?1:0,
+      intIdx: parseInt(document.getElementById('sl').value) || 0,
+      nm: parseInt(document.getElementById('nm').value) || 0,
+      ns: parseInt(document.getElementById('ns').value) || 0,
+      ne: parseInt(document.getElementById('ne').value) || 0,
+      br: parseInt(document.getElementById('br').value) || 100
+    };
+    
+    var bt=document.getElementById('bs');
+    var m=document.getElementById('sm');
+    bt.disabled=true; m.textContent='Salvando na nuvem...';
+    
+    fetch(FB_URL + 'cfg.json', {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(cfg)
+    })
+    .then(r=>r.json())
+    .then(()=>{
+      m.style.color='#4c4'; m.textContent='Sincronizado!';
+    })
+    .catch(()=>{
+      m.style.color='#f44'; m.textContent='Falha de rede';
+    })
+    .finally(()=>{
+      bt.disabled=false;
+      setTimeout(()=>m.textContent='', 3000);
+    });
+  }
+
+  // Get Memory/Records
+  function gm(){
+    fetch(FB_URL + 'records.json')
+    .then(r=>r.json())
+    .then(d=>{
+      var rec=d||[];
+      document.getElementById('bi-rec').textContent=rec.length;
+      var h='';
+      for(var i=rec.length-1; i>=0; i--){
+        var r=rec[i];
+        if(!r) continue;
+        var ln=rec.length-i;
+        h+='<tr><td>'+ln+'</td><td>'+(r.dt||'--')+'</td><td>'+(r.lt!=null?r.lt+' C':'--')+'</td><td>'+(r.bt!=null?r.bt+' C':'--')+'</td><td>'+(r.bh!=null?r.bh+'%':'--')+'</td><td>'+(r.bp!=null?r.bp+' hPa':'--')+'</td></tr>';
+      }
+      if(!h) h='<tr><td colspan=6 style="text-align:center;color:#666">Nenhum registro na nuvem</td></tr>';
+      document.getElementById('rb').innerHTML=h;
+    })
+    .catch(()=>{document.getElementById('rb').innerHTML='<tr><td colspan=6 style="color:#f44">Erro ao carregar do Firebase</td></tr>';});
+  }
+
+  // Start Live Sync
+  fd();
+  setInterval(fd, 5000); // 5 seconds poll
+
+  </script>
+</body>
+</html>
