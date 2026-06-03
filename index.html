@@ -100,6 +100,7 @@
     <div class='cfg'><div><div class='cfg-n'>Rede</div><div class='cfg-d'>IP e RSSI</div></div><label class='tog'><input type='checkbox' id='c3'><span class='sli'></span></label></div>
     <div class='cfg'><div><div class='cfg-n'>Grafico BME</div><div class='cfg-d'>Historico Temp</div></div><label class='tog'><input type='checkbox' id='c4'><span class='sli'></span></label></div>
     <div class='cfg'><div><div class='cfg-n'>Previsao</div><div class='cfg-d'>Tempo em 3 dias</div></div><label class='tog'><input type='checkbox' id='c5'><span class='sli'></span></label></div>
+    <div class='cfg'><div><div class='cfg-n'>Lua</div><div class='cfg-d'>Fase da Lua</div></div><label class='tog'><input type='checkbox' id='c6'><span class='sli'></span></label></div>
     
     <div class='ir'><span class='ir-l'>Troca tela</span><input type='range' id='sl' min='0' max='7' value='2' oninput='sv(this.value)'><span class='ir-v' id='slv'>3s</span></div>
     
@@ -177,6 +178,7 @@
       document.getElementById('c3').checked=d.s3==1;
       document.getElementById('c4').checked=d.s4==1;
       document.getElementById('c5').checked=d.s5==1;
+      document.getElementById('c6').checked=d.s6==1;
       if(d.intIdx!==undefined) {
         document.getElementById('sl').value=d.intIdx;
         document.getElementById('slv').textContent=lb[d.intIdx];
@@ -201,6 +203,7 @@
       s3: document.getElementById('c3').checked?1:0,
       s4: document.getElementById('c4').checked?1:0,
       s5: document.getElementById('c5').checked?1:0,
+      s6: document.getElementById('c6').checked?1:0,
       intIdx: parseInt(document.getElementById('sl').value) || 0,
       nm: parseInt(document.getElementById('nm').value) || 0,
       ns: parseInt(document.getElementById('ns').value) || 0,
