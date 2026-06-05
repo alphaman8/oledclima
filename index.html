@@ -8,9 +8,62 @@
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:#0d0d0d;color:#e0e0e0;font-family:system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:32px 16px}
   h1{font-size:1.5rem;color:#7ec8e3;margin:20px 0;letter-spacing:2px;text-transform:uppercase;font-weight:300;text-align:center}
-  .tabs{display:flex;gap:4px;margin-bottom:24px;flex-wrap:wrap;justify-content:center}
-  .tab{background:#1a1a2e;border:1px solid #2a2a4a;color:#888;padding:10px 20px;border-radius:8px 8px 0 0;cursor:pointer;font-size:.85rem;text-decoration:none;transition:.2s}
-  .tab.act{background:#16213e;color:#7ec8e3;border-color:#7ec8e3;border-bottom-color:transparent}
+  .tabs {
+    display: inline-flex;
+    background: rgba(26, 26, 46, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(42, 42, 74, 0.8);
+    padding: 6px;
+    border-radius: 30px;
+    margin-bottom: 28px;
+    gap: 6px;
+    justify-content: center;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  }
+  .tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: #9aa0a6;
+    padding: 8px 18px;
+    border-radius: 24px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    outline: none;
+  }
+  .tab:focus, .tab:active {
+    outline: none;
+  }
+  .tab:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+  }
+  .tab.act {
+    background: linear-gradient(135deg, #16213e 0%, #1a3a5c 100%);
+    color: #7ec8e3;
+    border-color: rgba(126, 200, 227, 0.25);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    font-weight: 600;
+  }
+  .tab-icon {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    transition: transform 0.25s ease;
+  }
+  .tab.act .tab-icon {
+    transform: scale(1.1);
+  }
   .sec{display:none;width:100%;max-width:700px}.sec.act{display:block}
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
   .card{background:#1a1a2e;border:1px solid #2a2a4a;border-radius:14px;padding:32px 20px;text-align:center;min-height:170px;display:flex;flex-direction:column;justify-content:center;transition:transform .2s}
@@ -55,9 +108,30 @@
   <h1>Estacao Climatica<br><small style="font-size:0.6rem;color:#888">Cloud Dashboard - Firebase</small></h1>
   
   <div class='tabs'>
-    <a class='tab act' onclick="showTab('d',this)">Dashboard</a>
-    <a class='tab' onclick="showTab('c',this)">Telas</a>
-    <a class='tab' onclick="showTab('m',this)">Historico</a>
+    <a class='tab act' onclick="showTab('d',this)">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="9" rx="1" />
+        <rect x="14" y="3" width="7" height="5" rx="1" />
+        <rect x="14" y="10" width="7" height="11" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+      </svg>
+      Dashboard
+    </a>
+    <a class='tab' onclick="showTab('c',this)">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+        <line x1="8" y1="21" x2="16" y2="21" />
+        <line x1="12" y1="17" x2="12" y2="21" />
+      </svg>
+      Telas
+    </a>
+    <a class='tab' onclick="showTab('m',this)">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 8v4l3 3" />
+        <path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5" />
+      </svg>
+      Histórico
+    </a>
   </div>
 
   <!-- Dashboard -->
