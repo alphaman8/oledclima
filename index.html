@@ -118,8 +118,22 @@
       </table>
     </div>
     <div class='card' style='margin-top:20px; min-height:80px; padding: 20px;'>
-      <div class='info-row' style='justify-content:center'>
+      <div class='info-row' style='justify-content:center; margin-bottom:15px'>
         <span class='info-cell'>Registros na Nuvem: <b id='bi-rec'>0</b></span>
+      </div>
+      <div style='border-top:1px solid #2a2a4a; padding-top:15px; text-align:left'>
+        <div class='bar-label'>
+          <span>Memória Interna (LittleFS)</span>
+          <span id='fs-pct-lbl'>--%</span>
+        </div>
+        <div class='bar'>
+          <div class='bar-f' id='fs-bar' style='width:0%'></div>
+        </div>
+        <div class='info-row' style='justify-content:space-between; margin-top:8px'>
+          <span class='info-cell'>Total: <b id='fs-total'>-- KB</b></span>
+          <span class='info-cell'>Usado: <b id='fs-used'>-- KB</b></span>
+          <span class='info-cell'>Livre: <b id='fs-free'>-- KB</b></span>
+        </div>
       </div>
     </div>
   </div>
@@ -162,6 +176,14 @@
       var s=d.uptime||0, h=Math.floor(s/3600), m=Math.floor((s%3600)/60); s%=60;
       document.getElementById('up').textContent='Up:'+h+'h'+m+'m'+s+'s';
       document.getElementById('rf').textContent='';
+
+      if (d.fsTotal !== undefined) {
+        document.getElementById('fs-total').textContent = (d.fsTotal / 1024).toFixed(1) + ' KB';
+        document.getElementById('fs-used').textContent = (d.fsUsed / 1024).toFixed(1) + ' KB';
+        document.getElementById('fs-free').textContent = (d.fsFree / 1024).toFixed(1) + ' KB';
+        document.getElementById('fs-pct-lbl').textContent = d.fsPct + '%';
+        document.getElementById('fs-bar').style.width = d.fsPct + '%';
+      }
     })
     .catch(()=>{document.getElementById('rf').textContent='Desconectado da Nuvem'});
   }
