@@ -56,8 +56,8 @@
   
   <div class='tabs'>
     <a class='tab act' onclick="showTab('d',this)">Dashboard</a>
-    <a class='tab' onclick="showTab('m',this)">Historico</a>
     <a class='tab' onclick="showTab('c',this)">Telas</a>
+    <a class='tab' onclick="showTab('m',this)">Historico</a>
   </div>
 
   <!-- Dashboard -->
@@ -70,25 +70,6 @@
     </div>
     <div class='foot'>
       <span id='ip'>--</span><span id='rs'>--</span><span id='up'>--</span><span id='rf'></span>
-    </div>
-  </div>
-
-  <!-- Memoria/Histórico -->
-  <div id='m' class='sec'>
-    <div class='tbl-wrap'>
-      <table class='tbl'>
-        <thead>
-          <tr><th>#</th><th>Data/Hora</th><th>Temp Local</th><th>Temp BME</th><th>Umidade</th><th>Pressao</th></tr>
-        </thead>
-        <tbody id='rb'>
-          <tr><td colspan='6' style='text-align:center;color:#666'>Carregando nuvem...</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class='card' style='margin-top:20px; min-height:80px; padding: 20px;'>
-      <div class='info-row' style='justify-content:center'>
-        <span class='info-cell'>Registros na Nuvem: <b id='bi-rec'>0</b></span>
-      </div>
     </div>
   </div>
 
@@ -122,6 +103,25 @@
     </div>
     
     <div style='text-align:center'><button class='btn' id='bs' onclick='sc()'>Salvar na Nuvem</button><div class='msg' id='sm'></div></div>
+  </div>
+
+  <!-- Memoria/Histórico -->
+  <div id='m' class='sec'>
+    <div class='tbl-wrap'>
+      <table class='tbl'>
+        <thead>
+          <tr><th>#</th><th>Data/Hora</th><th>Temp Local</th><th>Temp BME</th><th>Umidade</th><th>Pressao</th></tr>
+        </thead>
+        <tbody id='rb'>
+          <tr><td colspan='6' style='text-align:center;color:#666'>Carregando nuvem...</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class='card' style='margin-top:20px; min-height:80px; padding: 20px;'>
+      <div class='info-row' style='justify-content:center'>
+        <span class='info-cell'>Registros na Nuvem: <b id='bi-rec'>0</b></span>
+      </div>
+    </div>
   </div>
 
   <script>
