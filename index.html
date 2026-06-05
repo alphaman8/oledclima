@@ -88,6 +88,20 @@
       <div class='card'><div class='lbl'>Umidade</div><div class='val' id='h'>--</div><div class='sub'>BME280</div></div>
       <div class='card'><div class='lbl'>Pressao</div><div class='val' id='p'>--</div><div class='sub'>BME280</div></div>
       <div class='card'><div class='lbl'>Clima</div><div class='val' id='wt'>--</div><div class='sub' id='w'>--</div></div>
+      
+      <div class='card' style='display: flex; align-items: center; justify-content: space-between; padding: 15px 20px;'>
+        <div style='text-align: left;'>
+          <div class='lbl'>Fase da Lua</div>
+          <div class='val' style='font-size: 1.25rem; margin: 4px 0;' id='moon-phase-name'>--</div>
+          <div class='sub' id='moon-phase-illum'>--</div>
+        </div>
+        <div style='display: flex; align-items: center; justify-content: center;'>
+          <svg id="moon-svg" width="46" height="46" viewBox="0 0 40 40" style="filter: drop-shadow(0 0 4px rgba(224, 232, 255, 0.6));">
+            <circle cx="20" cy="20" r="15" fill="#14142a" stroke="#252545" stroke-width="1.5"/>
+            <path id="moon-lit-path" fill="#e0e8ff" d=""/>
+          </svg>
+        </div>
+      </div>
     </div>
     <div class='foot'>
       <span id='ip'>--</span>
@@ -229,6 +243,7 @@
         document.getElementById('fs-pct-lbl').textContent = pct + '%';
         document.getElementById('fs-bar').style.width = pct + '%';
       }
+      updateMoonPhase();
     })
     .catch(()=>{document.getElementById('rf').textContent='Desconectado da Nuvem'});
   }
@@ -419,6 +434,58 @@
     if (syncInterval > 0) {
       fd();
     }
+  }
+
+  function calcMoonPhase(t) {
+    const lunarCycle = 29.53058867;
+    const days = (t - 947182440) / 86400.0;
+    let phase = days / lunarCycle;
+    phase = phase - Math.floor(phase);
+    if (phase < 0) phase += 1.0;
+    return phase;
+  }
+
+  function getMoonSvgPath(phase) {
+    const r = 15;
+    const cx = 20;
+    const cy = 20;
+    const litRight = phase < 0.5;
+    const pct = litRight ? phase * 2.0 : (1.0 - phase) * 2.0;
+    
+    if (pct < 0.02) return "";
+    if (pct > 0.98) {
+      return `M ${cx} ${cy - r} A ${r} ${r} 0 1 1 ${cx} ${cy + r} A ${r} ${r} 0 1 1 ${cx} ${cy - r} Z`;
+    }
+    
+    const sweep1 = litRight ? 1 : 0;
+    const sweep2 = litRight ? 0 : 1;
+    const rx = Math.abs(r * (1 - pct * 2));
+    const sweep3 = (pct < 0.5) ? sweep2 : sweep1;
+    
+    return `M ${cx} ${cy - r} A ${r} ${r} 0 0 ${sweep1} ${cx} ${cy + r} A ${rx} ${r} 0 0 ${sweep3} ${cx} ${cy - r} Z`;
+  }
+
+  function updateMoonPhase() {
+    var nowT = Math.floor(Date.now() / 1000);
+    var mp = calcMoonPhase(nowT);
+    
+    var phaseName = "";
+    if (mp < 0.0625 || mp >= 0.9375) phaseName = "Lua Nova";
+    else if (mp < 0.1875) phaseName = "Crescente";
+    else if (mp < 0.3125) phaseName = "Quarto Cresc.";
+    else if (mp < 0.4375) phaseName = "Gibosa Cresc.";
+    else if (mp < 0.5625) phaseName = "Lua Cheia";
+    else if (mp < 0.6875) phaseName = "Gibosa Ming.";
+    else if (mp < 0.8125) phaseName = "Quarto Ming.";
+    else phaseName = "Minguante";
+    
+    var pct = Math.round((1.0 - Math.cos(2 * Math.PI * mp)) * 50.0);
+    
+    document.getElementById('moon-phase-name').textContent = phaseName;
+    document.getElementById('moon-phase-illum').textContent = "Ilum: " + pct + "%";
+    
+    var path = getMoonSvgPath(mp);
+    document.getElementById('moon-lit-path').setAttribute('d', path);
   }
 
   // Start Live Sync
