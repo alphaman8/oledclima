@@ -90,7 +90,25 @@
       <div class='card'><div class='lbl'>Clima</div><div class='val' id='wt'>--</div><div class='sub' id='w'>--</div></div>
     </div>
     <div class='foot'>
-      <span id='ip'>--</span><span id='rs'>--</span><span id='up'>--</span><span id='rf'></span>
+      <span id='ip'>--</span>
+      <span id='rs'>--</span>
+      <span id='up'>--</span>
+      <span style='display: flex; align-items: center; gap: 6px;'>
+        Sync: 
+        <select id='sync-interval' onchange='changeSyncInterval(this.value)' style='background: #1a1a2e; color: #7ec8e3; border: 1px solid #2a2a4a; border-radius: 4px; padding: 2px 4px; font-size: 0.7rem; cursor: pointer; outline: none;'>
+          <option value='5000'>5s</option>
+          <option value='10000' selected>10s</option>
+          <option value='15000'>15s</option>
+          <option value='30000'>30s</option>
+          <option value='0'>Pausado</option>
+        </select>
+        <svg class="sync-loader" width="14" height="14" viewBox="0 0 16 16" style="vertical-align: middle;">
+          <circle cx="8" cy="8" r="6" fill="none" stroke="#2a2a4a" stroke-width="2"/>
+          <circle id="sync-progress" cx="8" cy="8" r="6" fill="none" stroke="#7ec8e3" stroke-width="2" 
+                  stroke-dasharray="37.7" stroke-dashoffset="37.7" stroke-linecap="round" transform="rotate(-90 8 8)" style="transition: stroke-dashoffset 0.1s linear;"/>
+        </svg>
+      </span>
+      <span id='rf'></span>
     </div>
   </div>
 
@@ -177,7 +195,11 @@
     e.classList.add('act');
     if(t==='c') gc();
     if(t==='m') gm();
-    if(t==='d') updateGraph();
+    if(t==='d') {
+      fd();
+      updateGraph();
+      lastFdTime = Date.now();
+    }
   }
 
   // Fetch Live Data
@@ -353,11 +375,56 @@
     .catch(err => console.error('Erro ao desenhar gráfico:', err));
   }
 
+  var syncInterval = parseInt(localStorage.getItem('webSyncInterval') || '10000');
+  document.getElementById('sync-interval').value = syncInterval;
+
+  var lastFdTime = Date.now();
+  var lastGraphTime = Date.now();
+  var syncTimer = null;
+
+  function runSyncLoop() {
+    if (syncTimer) clearInterval(syncTimer);
+    
+    syncTimer = setInterval(() => {
+      if (syncInterval === 0) {
+        document.getElementById('sync-progress').style.strokeDashoffset = 37.7;
+        return;
+      }
+      
+      var now = Date.now();
+      var elapsedFd = now - lastFdTime;
+      var elapsedGraph = now - lastGraphTime;
+      
+      if (elapsedFd >= syncInterval) {
+        fd();
+        lastFdTime = now;
+        elapsedFd = 0;
+      }
+      
+      if (elapsedGraph >= 60000) {
+        updateGraph();
+        lastGraphTime = now;
+      }
+      
+      var pct = Math.min(elapsedFd / syncInterval, 1);
+      var offset = 37.7 - (pct * 37.7);
+      document.getElementById('sync-progress').style.strokeDashoffset = offset;
+    }, 100);
+  }
+
+  function changeSyncInterval(val) {
+    syncInterval = parseInt(val);
+    localStorage.setItem('webSyncInterval', val);
+    lastFdTime = Date.now();
+    if (syncInterval > 0) {
+      fd();
+    }
+  }
+
   // Start Live Sync
   fd();
-  setInterval(fd, 5000); // 5 seconds poll
   updateGraph();
-  setInterval(updateGraph, 60000); // 1 minute poll
+  runSyncLoop();
 
   </script>
 </body>
