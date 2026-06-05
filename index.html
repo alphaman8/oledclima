@@ -87,7 +87,7 @@
 
       <div class='card'><div class='lbl'>Umidade</div><div class='val' id='h'>--</div><div class='sub'>BME280</div></div>
       <div class='card'><div class='lbl'>Pressao</div><div class='val' id='p'>--</div><div class='sub'>BME280</div></div>
-      <div class='card'><div class='lbl'>Clima</div><div class='val' style='font-size:1.2rem' id='w'>--</div><div class='sub' id='wt'>--</div></div>
+      <div class='card'><div class='lbl'>Clima</div><div class='val' id='wt'>--</div><div class='sub' id='w'>--</div></div>
     </div>
     <div class='foot'>
       <span id='ip'>--</span><span id='rs'>--</span><span id='up'>--</span><span id='rf'></span>
@@ -191,7 +191,7 @@
       document.getElementById('h').innerHTML=d.bmeHum+'<span class="unt">%</span>'+(ok?'':' <small style="color:#f80">cache</small>');
       document.getElementById('p').innerHTML=d.bmePres+'<span class="unt">hPa</span>'+(ok?'':' <small style="color:#f80">cache</small>');
       document.getElementById('w').textContent=d.city;
-      document.getElementById('wt').innerHTML=d.temperature+' C';
+      document.getElementById('wt').innerHTML=d.temperature+'<span class="unt">C</span>';
       document.getElementById('ip').textContent='IP:'+d.ip;
       document.getElementById('rs').textContent='RSSI:'+d.rssi;
       
