@@ -213,16 +213,7 @@
     <div class='ir'><span class='ir-l'>Troca tela</span><input type='range' id='sl' min='0' max='7' value='2' oninput='sv(this.value)'><span class='ir-v' id='slv'>3s</span></div>
     
     
-    <div class='cfg'>
-        <div>
-          <div class='cfg-n'>Flash do ESP32-CAM</div>
-          <div class='cfg-d'>Liga/Desliga o LED Flash</div>
-        </div>
-        <label class='tog'>
-          <input type='checkbox' id='fb'>
-          <span class='sli'></span>
-        </label>
-      </div>
+    <div class='ir' style='margin-top:16px'><span class='ir-l'>Flash LED</span><input type='range' id='fb' min='0' max='100' value='0' oninput='document.getElementById("fb-v").textContent=this.value'><span class='ir-v' id='fb-v'>0</span></div>
     
     <div class='cfg' style='flex-direction:column;align-items:flex-start;gap:10px'>
       <div style='width:100%;display:flex;justify-content:space-between'>
@@ -353,7 +344,8 @@
       if(d.ns!==undefined) document.getElementById('ns').value=d.ns;
       if(d.ne!==undefined) document.getElementById('ne').value=d.ne;
       if(d.fb!==undefined) {
-        document.getElementById('fb').checked = d.fb == 1;
+        document.getElementById('fb').value = d.fb;
+        document.getElementById('fb-v').textContent = d.fb;
       }
       tc();
     });
@@ -373,7 +365,7 @@
       nm: parseInt(document.getElementById('nm').value) || 0,
       ns: parseInt(document.getElementById('ns').value) || 0,
       ne: parseInt(document.getElementById('ne').value) || 0,
-      fb: document.getElementById('fb').checked ? 1 : 0
+      fb: parseInt(document.getElementById('fb').value) || 0
     };
     
     var bt=document.getElementById('bs');
