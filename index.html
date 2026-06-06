@@ -214,6 +214,17 @@
     
     <div class='cfg' style='flex-direction:column;align-items:flex-start;gap:10px'><div style='width:100%;display:flex;justify-content:space-between'><div><div class='cfg-n'>Brilho do OLED</div><div class='cfg-d'>Luminosidade (1-255)</div></div><span id='brv' style='color:#7ec8e3;font-size:.9rem;font-weight:600'>100</span></div><input type='range' id='br' min='1' max='255' value='100' oninput='document.getElementById("brv").textContent=this.value' style='width:100%'></div>
     
+    <div class='cfg'>
+        <div>
+          <div class='cfg-n'>Flash do ESP32-CAM</div>
+          <div class='cfg-d'>Liga/Desliga o LED Flash</div>
+        </div>
+        <label class='tog'>
+          <input type='checkbox' id='fb'>
+          <span class='sli'></span>
+        </label>
+      </div>
+    
     <div class='cfg' style='flex-direction:column;align-items:flex-start;gap:10px'>
       <div style='width:100%;display:flex;justify-content:space-between'>
         <div><div class='cfg-n'>Descanso de Tela</div><div class='cfg-d'>Evita Burn-in do OLED</div></div>
@@ -346,6 +357,9 @@
         document.getElementById('br').value=d.br;
         document.getElementById('brv').textContent=d.br;
       }
+      if(d.fb!==undefined) {
+        document.getElementById('fb').checked = d.fb == 1;
+      }
       tc();
     });
   }
@@ -364,7 +378,8 @@
       nm: parseInt(document.getElementById('nm').value) || 0,
       ns: parseInt(document.getElementById('ns').value) || 0,
       ne: parseInt(document.getElementById('ne').value) || 0,
-      br: parseInt(document.getElementById('br').value) || 100
+      br: parseInt(document.getElementById('br').value) || 100,
+      fb: document.getElementById('fb').checked ? 1 : 0
     };
     
     var bt=document.getElementById('bs');
