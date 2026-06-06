@@ -578,7 +578,7 @@
     msg.style.color = '#888';
     msg.textContent = 'Removendo...';
 
-    fetch('http://' + ip + '/mem?idx=' + idx, { method: 'DELETE' })
+    fetch('http://' + ip + '/del?idx=' + idx)
       .then(function(r) { return r.json(); })
       .then(function(d) {
         if (d.ok == 1) {
