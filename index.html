@@ -212,7 +212,6 @@
     
     <div class='ir'><span class='ir-l'>Troca tela</span><input type='range' id='sl' min='0' max='7' value='2' oninput='sv(this.value)'><span class='ir-v' id='slv'>3s</span></div>
     
-    <div class='cfg' style='flex-direction:column;align-items:flex-start;gap:10px'><div style='width:100%;display:flex;justify-content:space-between'><div><div class='cfg-n'>Brilho do OLED</div><div class='cfg-d'>Luminosidade (1-255)</div></div><span id='brv' style='color:#7ec8e3;font-size:.9rem;font-weight:600'>100</span></div><input type='range' id='br' min='1' max='255' value='100' oninput='document.getElementById("brv").textContent=this.value' style='width:100%'></div>
     
     <div class='cfg'>
         <div>
@@ -353,10 +352,6 @@
       if(d.nm!==undefined) document.getElementById('nm').value=d.nm;
       if(d.ns!==undefined) document.getElementById('ns').value=d.ns;
       if(d.ne!==undefined) document.getElementById('ne').value=d.ne;
-      if(d.br!==undefined) {
-        document.getElementById('br').value=d.br;
-        document.getElementById('brv').textContent=d.br;
-      }
       if(d.fb!==undefined) {
         document.getElementById('fb').checked = d.fb == 1;
       }
@@ -378,7 +373,6 @@
       nm: parseInt(document.getElementById('nm').value) || 0,
       ns: parseInt(document.getElementById('ns').value) || 0,
       ne: parseInt(document.getElementById('ne').value) || 0,
-      br: parseInt(document.getElementById('br').value) || 100,
       fb: document.getElementById('fb').checked ? 1 : 0
     };
     
