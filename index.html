@@ -247,16 +247,16 @@
     <div class='tbl-wrap'>
       <table class='tbl'>
         <thead>
-          <tr><th>#</th><th>Data/Hora</th><th>Temp Local</th><th>Temp BME</th><th>Umidade</th><th>Pressao</th></tr>
+          <tr><th>#</th><th>Data/Hora</th><th>Temp Local</th><th>Temp BME</th><th>Umidade</th><th>Pressao</th><th style='width:32px'></th></tr>
         </thead>
         <tbody id='rb'>
-          <tr><td colspan='6' style='text-align:center;color:#666'>Carregando nuvem...</td></tr>
+          <tr><td colspan='7' style='text-align:center;color:#666'>Carregando nuvem...</td></tr>
         </tbody>
       </table>
     </div>
     <div class='card' style='margin-top:20px; min-height:80px; padding: 20px;'>
       <div class='info-row' style='justify-content:center; margin-bottom:15px'>
-        <span class='info-cell'>Registros na Nuvem: <b id='bi-rec'>0</b></span>
+        <span class='info-cell'>Registros na Nuvem: <b id='bi-rec'>0</b> <span id='del-msg' style='font-size:.7rem;color:#888;margin-left:8px'></span></span>
       </div>
       <div style='border-top:1px solid #2a2a4a; padding-top:15px; text-align:left'>
         <div class='bar-label'>
@@ -411,12 +411,12 @@
         var r=rec[i];
         if(!r) continue;
         var ln=rec.length-i;
-        h+='<tr><td>'+ln+'</td><td>'+(r.dt||'--')+'</td><td>'+(r.lt!=null?r.lt+' C':'--')+'</td><td>'+(r.bt!=null?r.bt+' C':'--')+'</td><td>'+(r.bh!=null?r.bh+'%':'--')+'</td><td>'+(r.bp!=null?r.bp+' hPa':'--')+'</td></tr>';
+        h+='<tr><td>'+ln+'</td><td>'+(r.dt||'--')+'</td><td>'+(r.lt!=null?r.lt+' C':'--')+'</td><td>'+(r.bt!=null?r.bt+' C':'--')+'</td><td>'+(r.bh!=null?r.bh+'%':'--')+'</td><td>'+(r.bp!=null?r.bp+' hPa':'--')+'</td><td><button class="del" onclick="deleteRecord('+i+')" title="Remover do ESP">✕</button></td></tr>';
       }
-      if(!h) h='<tr><td colspan=6 style="text-align:center;color:#666">Nenhum registro na nuvem</td></tr>';
+      if(!h) h='<tr><td colspan=7 style="text-align:center;color:#666">Nenhum registro na nuvem</td></tr>';
       document.getElementById('rb').innerHTML=h;
     })
-    .catch(()=>{document.getElementById('rb').innerHTML='<tr><td colspan=6 style="color:#f44">Erro ao carregar do Firebase</td></tr>';});
+    .catch(()=>{document.getElementById('rb').innerHTML='<tr><td colspan=7 style="color:#f44">Erro ao carregar do Firebase</td></tr>';});
   }
 
   // Get and draw BME temperature graph on dashboard
@@ -569,6 +569,39 @@
     
     var path = getMoonSvgPath(mp);
     document.getElementById('moon-lit-path').setAttribute('d', path);
+  }
+
+  // === Delete local record via ESP ===
+  function getEspIp() {
+    var ipText = document.getElementById('ip').textContent || '';
+    var m = ipText.match(/(\d+\.\d+\.\d+\.\d+)/);
+    return m ? m[1] : null;
+  }
+
+  function deleteRecord(idx) {
+    var ip = getEspIp();
+    if (!ip) { document.getElementById('del-msg').textContent = 'IP do ESP indisponivel'; return; }
+
+    var msg = document.getElementById('del-msg');
+    msg.style.color = '#888';
+    msg.textContent = 'Removendo...';
+
+    fetch('http://' + ip + '/mem?idx=' + idx, { method: 'DELETE' })
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (d.ok == 1) {
+          msg.style.color = '#4a4';
+          msg.textContent = 'Removido!';
+          gm(); // recarrega tabela
+        } else {
+          msg.style.color = '#f44';
+          msg.textContent = 'Falha ao remover';
+        }
+      })
+      .catch(function() {
+        msg.style.color = '#f44';
+        msg.textContent = 'ESP nao respondeu (mesma rede?)';
+      });
   }
 
   // Start Live Sync
